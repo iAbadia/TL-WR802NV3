@@ -1,5 +1,8 @@
 # TL-WR802N V3 (EU) FIRMWARE
 
+## Disclaimer
+Building and installing a firmware for an embedded device is always tricky and might end up on a bricked device. **I'm not responsible for any damage caused because of using this code**.
+
 ## Build requirements
 
  - `Ubuntu 14.04 i386`
