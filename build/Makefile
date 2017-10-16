@@ -2070,7 +2070,7 @@ mk_squashfs_build:
 # Here, remove the nonsense static archive libs
 	@find $(INSTALL_ROOT_FOR_BOARD)/lib/ -name "*.a" | xargs rm -rf
 	@find $(INSTALL_ROOT_FOR_BOARD)/lib/ -name "*.la" | xargs rm -rf
-	@$(TOPDIR)/util/fakeroot/install/bin/fakeroot $(TOPDIR)/util/buildFS_LZ
+	@fakeroot $(TOPDIR)/util/buildFS_LZ
 	@ls -l $(IMAGEPATH)/$(FS_NAME)
 	@cp $(IMAGEPATH)/$(FS_NAME) $(TFTPPATH)
 
@@ -2098,7 +2098,7 @@ mk_squashfs_build:
 # Here, remove the nonsense static archive libs
 	@find $(INSTALL_ROOT_FOR_BOARD)/lib/ -name "*.a" | xargs rm -rf
 	@find $(INSTALL_ROOT_FOR_BOARD)/lib/ -name "*.la" | xargs rm -rf
-	@$(TOPDIR)/util/fakeroot/install/bin/fakeroot $(TOPDIR)/util/buildFS_LZ
+	@fakeroot $(TOPDIR)/util/buildFS_LZ
 	@ls -l $(IMAGEPATH)/$(FS_NAME)
 	@$(TOPDIR)/util/pad -i $(IMAGEPATH)/$(FS_NAME) -p $(fs_size)
 	@cp $(IMAGEPATH)/$(FS_NAME) $(TFTPPATH)
