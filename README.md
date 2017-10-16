@@ -32,7 +32,7 @@ Go to `src/build` folder and execute make.
 Go to the repository root directory and execute:
 
     $ docker run --rm -v "$PWD/src:/home/user/src:rw" \
-      -it iabadia/ubuntu_tl-wr802nv3 \
+      -it iabadia/docker_tl-wr802nv3 \
       /bin/bash -c 'cd /home/user/src/build && make'
 
 That will generate the following files under `src/images/wr802nv3_eu`:
