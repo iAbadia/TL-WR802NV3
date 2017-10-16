@@ -1,0 +1,5 @@
+wr802nv3_eu: httpd_build
+	make apxxfus_fs_prep enet=ag7240 lang=en oem_dir=WR802N3.0
+	make mk_squashfs_build fs_size=0x2C0000
+	make image_build prefix=wr802nv3_eu
+

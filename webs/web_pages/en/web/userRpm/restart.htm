@@ -1,0 +1,220 @@
+
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<SCRIPT type="text/javascript">
+<!--//
+
+function LoadMain()
+{
+	parent.location.href = "http://" + rebootInf[0] + ":" + rebootInf[1];
+}
+
+function doLoad()
+{
+	doReFresh();
+}
+var timeout = rebootInf[2] * 10;
+var rate = 0;
+function doReFresh()
+{
+	window.setTimeout("growUp()",timeout);
+}
+function growUp()
+{
+	rate = rate + 1;
+	document.getElementById("td1").style.width = rate + "%";
+    var per=document.getElementById("percent");
+    per.innerHTML=rate+"%";
+	if(rate >= 100)
+	{
+		if(8 == rebootInf[3])
+		{
+			document.getElementById("t_restart").style.display="none";
+			document.getElementById("t_setting").style.display="none";
+			document.getElementById("t_plan").style.display="none";
+			document.getElementById("t_partition_1").style.display="none";
+			document.getElementById("t_partition_2").style.display="";
+			document.getElementById("t_title").innerHTML = "Quick Setup - Completed";
+			if(1 == workingInf[0])
+			{
+				document.getElementById("t_router").style.display="";
+				document.getElementById("t_router_title").style.display="";
+				//document.getElementById("t_router_1").style.display="";
+				//document.getElementById("t_router_2").style.display="";
+				//document.getElementById("t_router_3").style.display="";
+				//document.getElementById("t_router_4").style.display="";
+				//document.getElementById("t_router_5").style.display="";
+				//document.getElementById("t_router_6").style.display="";
+			}
+			if(2 == workingInf[0])
+			{
+				document.getElementById("t_wisp").style.display="";
+				document.getElementById("t_wisp_title").style.display="";
+				//document.getElementById("t_wisp_1").style.display="";
+				//document.getElementById("t_wisp_2").style.display="";
+				//document.getElementById("t_wisp_3").style.display="";
+				//document.getElementById("t_wisp_4").style.display="";
+				//document.getElementById("t_wisp_5").style.display="";
+			}
+			if(3 == workingInf[0])
+			{
+				document.getElementById("t_ap").style.display="";
+				document.getElementById("t_ap_title").style.display="";
+				//document.getElementById("t_ap_1").style.display="";
+				//document.getElementById("t_ap_2").style.display="";
+				//document.getElementById("t_ap_3").style.display="";
+				//document.getElementById("t_ap_4").style.display="";
+				//document.getElementById("t_ap_5").style.display="";
+			}
+			if(4 == workingInf[0])
+			{
+				document.getElementById("t_client").style.display="";
+				document.getElementById("t_client_title").style.display="";
+				//document.getElementById("t_client_1").style.display="";
+				//document.getElementById("t_client_2").style.display="";
+				//document.getElementById("t_client_3").style.display="";
+			}
+			if(5 == workingInf[0])
+			{
+				document.getElementById("t_rpt").style.display="";
+				document.getElementById("t_rpt_title").style.display="";
+				//document.getElementById("t_rpt_1").style.display="";
+				//document.getElementById("t_rpt_2").style.display="";
+				//document.getElementById("t_rpt_3").style.display="";
+			}
+			return;
+		}
+		else
+		{
+			var obj=document.getElementById("t_notice");
+			obj.style.display="block";
+			document.getElementById("t_restart").style.display="none";
+			document.getElementById("t_complete").style.display="block";
+			document.getElementById("t_complete").style.color="#C11C66";
+			per.style.color="#C11C66";
+			LoadMain();
+			return;
+		}
+	}
+	doReFresh();
+}
+
+//-->
+</SCRIPT>
+<SCRIPT language="JavaScript"  type="text/JavaScript">
+</SCRIPT>
+</HEAD>
+<BODY onLoad="setTagStr(document,'basic_restart');return doLoad()">
+<CENTER>
+  <FORM>
+    <TABLE border=0>
+      <TBODY>
+        <TR>
+          <TD class=h1 id = "t_title" >Reboot</TD>
+        </TR>
+        <TR>
+          <TD class=blue></TD>
+        </TR>
+        <SCRIPT type="text/javascript">
+<!--
+switch (rebootInf[3])
+{
+	case 0:
+		//document.write("<TR><TD class=h2 id = \"t_reboot\">Device Reboot Successfully!</TD></TR>");
+		break;	
+	case 1:
+		document.write("<TR><TD class=h2 id = \"t_def\">Factory Settings Restored Successfully!</TD></TR>");
+		break;	
+	case 2:
+		document.write("<TR><TD class=h2 id = \"t_upgrade\">Software Upgraded Successfully!</TD></TR>");
+		break;
+    case 3:
+    	document.write("<TR><TD class=h2 id = \"t_upload\">Configuration Uploaded Successfully!</TD></TR>");
+		break;
+	case 4:
+		document.write("<TR><TD class=h2 id = \"t_pppoe\">WLAN Configuration Saved Successfully!</TD></TR>");
+		break;
+	case 14:
+		document.write("<TR><TD class=h2 id = \"t_fail\">The software version does not match and parts of the configuration have failed to be imported, successful imports require a restart for the changes to take effect!</TD></TR>");
+		break;		
+	default:
+		document.write("<TR><TD class=h2 id = \"t_setting\">Configuration Completed Successfully.</TD></TR>");
+	break;
+}
+//-->
+</SCRIPT>
+        <!--added by ZQQ08.10.09-->
+        <TR>
+          <TD class=h2 id="t_restart">Rebooting...</TD>
+        </TR>
+        <TR>
+          <TD class=h2 id="t_complete" style="display:none">Completed!</TD>
+        </TR>
+        <TR>
+          <TD id="t_plan" align = "center" style="padding-left:5%"><TABLE border="0" cellpadding="0" cellspacing="0" height="10" align="center" class="space" width="40%">
+              <TR>
+                <TD><DIV id="percent"></DIV></TD>
+                <TD style = "width:98%"><TABLE id="td1"  class="guage" border="0" cellpadding="0" cellspacing="0" height="10" style="width:0px;">
+                    <TR>
+                      <TD></TD>
+                    </TR>
+                  </TABLE></TD>
+              </TR>
+            </TABLE></TD>
+        </TR>
+        <TR>
+          <TD class = "h2" id ="t_notice" style="display:none">Please wait a moment, if the browser does not refresh automatically, click Refresh on the top of your browser.</TD>
+        </TR>
+		<TR id = t_partition_1>
+          <TD class=blue></TD>
+        </TR>
+		<TR id="t_router" style="display:none">
+			<TD id="t_router_title" style="display:none"><B>Next step after the reboot:</B><br/><br/>
+			1.Connect the Internet cable to Ethernet port on the TL-WR802N;<br/><br/>			
+			2.Connect one of your laptop, smartphone or tablet to this Wi-Fi network:<br/><br/>
+			&nbsp;&nbsp;&nbsp;Wi-Fi Network Name: <SCRIPT type="text/javascript">document.write(workingInf[1])</SCRIPT><br/><br/>
+			&nbsp;&nbsp;&nbsp;Wi-Fi Password: <SCRIPT type="text/javascript">document.write(workingInf[2])</SCRIPT><br/><br/>
+			3.Be sure the LED is solid on; if not, please access the <a href="http://tplinkwifi.net">http://tplinkwifi.net</a> again via the Wi-Fi network and configure it again;<br/><br/>
+			4.Your setup is completed. All your devices can share this Internet.<br/><br/></TD>
+		</TR>
+		<TR id="t_ap" style="display:none">
+			<TD id="t_ap_title" style="display:none"><B>Next step after the reboot:</B><br/><br/>
+			1.Connect the Internet cable to Ethernet port on the TL-WR802N;<br/><br/>
+			2.Connect one of your laptop, smartphone or tablet to this Wi-Fi network:<br/><br/>
+			&nbsp;&nbsp;&nbsp;Wi-Fi Network Name: <SCRIPT type="text/javascript">document.write(workingInf[1])</SCRIPT><br/><br/>
+			&nbsp;&nbsp;&nbsp;Wi-Fi Password: <SCRIPT type="text/javascript">document.write(workingInf[2])</SCRIPT><br/><br/>
+			3.Be sure the LED is solid on; if not, please access the <a href="http://tplinkwifi.net">http://tplinkwifi.net</a> again via Ethernet connection and configure it again;<br/><br/>
+			4.Your setup is completed.<br/><br/></TD>
+		</TR>
+		<TR id="t_wisp" style="display:none">
+			<TD id="t_wisp_title" style="display:none"><B>Next step after the reboot:</B><br/><br/>
+			1.Be sure the LED is solid on; if not, please access the <a href="http://tplinkwifi.net">http://tplinkwifi.net</a> again via Ethernet connection and configure it again;<br/><br/>
+			2.Connect one of your laptop, smartphone or tablet to this Wi-Fi network:<br/><br/>
+			&nbsp;&nbsp;&nbsp;Wi-Fi Network Name: <SCRIPT type="text/javascript">document.write(workingInf[1])</SCRIPT><br/><br/>
+			&nbsp;&nbsp;&nbsp;Wi-Fi Password: <SCRIPT type="text/javascript">document.write(workingInf[2])</SCRIPT><br/><br/>
+			3.Open a browser and access a web page, like <a href="http://www.tp-link.com">http://www.tp-link.com</a>; you will be redirected to the login page to type in your account of the public Wi-Fi;<br/><br/>
+			4.Your setup is completed. All your devices can share this Internet.<br/><br/></TD>
+		</TR>
+		<TR id="t_client" style="display:none">
+			<TD id="t_client_title" style="display:none"><B>Next step after the reboot:</B><br/><br/>
+			1.Be sure the LED is solid on; if not, please access the <a href="http://tplinkwifi.net">http://tplinkwifi.net</a> again via Ethernet connection and configure it again;<br/><br/>
+			2.Relocate the device close to the network-capable devices, like wired Smart TV, Blu-ray Player, connect an Ethernet from the TL-WR802N to this device and power on the TL-WR802N;<br/><br/>
+			3.Your setup is completed.<br/><br/></TD>
+		</TR>
+		<TR id="t_rpt" style="display:none">
+			<TD id="t_rpt_title" style="display:none"><B>Next step after the reboot:</B><br/><br/>
+			1.Be sure the LED is solid on; if not, please access the <a href="http://tplinkwifi.net">http://tplinkwifi.net</a> again via Ethernet connection and configure it again;<br/><br/>
+			2.Relocate the device to the midway between your router and the WiFi Dead Zone. The WiFi Dead Zone is where you have weak signal from your router;<br/><br/>
+			3.Your setup is completed.<br/><br/></TD>
+		</TR>
+        <TR id = t_partition_2 style="display:none">
+          <TD class=blue></TD>
+        </TR>
+      </TBODY>
+    </TABLE>
+  </FORM>
+</CENTER>
+</BODY>
+<HEAD>
+<META http-equiv="pragma" content="no-cache">
+</HEAD>
+</HTML>

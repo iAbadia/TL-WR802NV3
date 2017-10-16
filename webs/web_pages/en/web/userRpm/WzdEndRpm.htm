@@ -1,0 +1,605 @@
+<SCRIPT type="text/javascript">
+<!--//
+var strSecType = new Array(
+"No Security",
+"Secure(WEP)",
+"--",
+"Most Secure(WPA/WPA2-PSK)"
+);
+
+var wepType = new Array(
+"Open System",
+"Shared Key",
+"Automatic"
+);
+
+var wpaVersion = new Array(
+"WPA-PSK",
+"WPA2-PSK",
+"Automatic"
+);
+
+var wpaEncrypt = new Array(
+"Automatic",
+"TKIP",
+"AES"
+);
+
+var opModeList = new Array(
+//value	enabled	name
+	1,		"Wireless Router",
+	4,		"Hotspot Router",
+	7,		"Access Point",
+	6,		"Range Extender",
+	3,		"Client",
+	-1,		"EOF"
+);
+
+function initFinish()
+{
+	if (wzdFinishInf[5] == 1)
+	{
+		cf.Finish.name = "Reboot";
+		cf.Finish.value = "Reboot";
+	}
+	else
+	{
+		cf.Finish.name = "Finish";
+		cf.Finish.value = "Finish";
+	}
+}
+
+function doFinish()
+{
+	if (wzdFinishInf[5] == 1)
+	{
+		return doReboot();
+	}
+	else if (wzdNetWorkPara[2] == 1)
+	{
+		if (confirm(js_sure_reboot = "The change of Network Setting will not take effect until this Device reboot ! Are you want to reboot this Device now ?"))
+		{
+			location.href = "../userRpm/SysRebootRpm.htm?Reboot=Reboot";
+			return true;
+		}
+		else
+		{
+			if (window.parent == window)
+			{
+				window.close();
+				return false;
+			}
+			else 
+			{
+				parent.bottomLeftFrame.collapseAll();
+				parent.bottomLeftFrame.location.href = "../userRpm/MenuRpm.htm?&WzdStepOnly=0";
+				parent.mainFrame.location.href="../userRpm/StatusRpm.htm";
+				return false;
+			}
+		}
+	}
+	
+	return true;
+} 
+
+function doReboot()
+{
+	if(confirm(js_sure_reboot = "Are you sure to reboot this Device?"))
+	{
+		location.href = "../userRpm/SysRebootRpm.htm?Reboot=Reboot";
+		return true;
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+function saveConfig()
+{
+	location.href="../userRpm/UserConfig.txt";
+	return true;
+}
+
+function initStats()
+{
+	loadMode();
+	loadWlanCfg();
+	loadNetworkCfg();
+}
+
+function getOpModeName(modeId)
+{
+	i = 0;
+	
+	while (opModeList[i] != -1)
+	{
+		if (modeId == opModeList[i])
+		{
+			return opModeList[i + 1];
+		}
+		i = i + 2;
+	}
+}
+
+function loadMode()
+{
+	var wlanMode;
+	wlanMode = wzdFinishInf[8];
+	document.getElementById("operMode").innerHTML = getOpModeName(wlanMode);	
+}
+
+function loadWlanCfg()
+{
+	var apMode = wzdWlanPara[1];
+	var wlanMode;
+	wlanMode = wzdFinishInf[8];	
+	
+	/*
+	var operModeIdx = getOperModeIdxByValue(apMode);
+	document.getElementById("operMode").innerHTML = getOperModeName(operModeIdx);
+	*/
+	if (wlanMode == 8)	//brige(wds)
+	{
+		document.getElementById("apSsid").innerHTML = "Local Wireless Name(SSID):";
+		//document.getElementById("wds_ssid").innerHTML = wzdWlanPara[22];
+		document.getElementById("wds_bssid").innerHTML = escapeHtml(wzdWlanPara[23]);
+		document.getElementById("t_wds_ssid").style.display = "";
+		document.getElementById("t_wds_bssid").style.display = "";
+	}
+		
+	if (wlanMode == 7)//ap,mssid and mpt(wds) and mpt(nawds)
+	{
+		var channel = wzdWlanPara[2];
+		if (15 == channel)
+			document.getElementById("localChannel").innerHTML = "Auto (Current channel " + wzdWlanPara[28]+")";
+		else
+			document.getElementById("localChannel").innerHTML = channel;		
+		document.getElementById("localSsid").innerHTML = escapeHtml(wzdWlanPara[3]);	
+		document.getElementById("t_channel").style.display = "";
+		if(apMode != 1 && apMode != 2)
+			document.getElementById("t_ap_ssid").style.display = "";
+		
+		if(apMode == 7)	//bridge with ap(nawds)
+		{
+			if(wzdWlanPara[18] != "")
+			{
+				document.getElementById("mptBssid1").innerHTML = wzdWlanPara[18];	
+				document.getElementById("t_mptBssid1").style.display = "";
+			}
+			if(wzdWlanPara[19] != "")
+			{
+				document.getElementById("mptBssid2").innerHTML = wzdWlanPara[19];	
+				document.getElementById("t_mptBssid2").style.display = "";
+			}
+			if(wzdWlanPara[20] != "")
+			{
+				document.getElementById("mptBssid3").innerHTML = wzdWlanPara[20];	
+				document.getElementById("t_mptBssid3").style.display = "";
+			}
+			if(wzdWlanPara[21] != "")
+			{
+				document.getElementById("mptBssid4").innerHTML = wzdWlanPara[21];	
+				document.getElementById("t_mptBssid4").style.display = "";
+			}			
+		}
+	}
+	else if (wlanMode == 1 || wlanMode == 4) //router/WISP, not need root ap info
+	{
+		document.getElementById("localSsid").innerHTML = escapeHtml(wzdWlanPara[3]);
+		document.getElementById("t_ap_ssid").style.display = "";	
+	}
+	else //client ,rpt and urpt
+	{
+		if(wlanMode == 3)		//clietnt
+		{
+			//document.getElementById("rootSsid").innerHTML = wzdWlanPara[12];
+			document.getElementById("remoteBssid").innerHTML = escapeHtml(wzdWlanPara[13]);
+		}	
+		else if(wlanMode == 6)	//rpt
+		{
+			//document.getElementById("rootSsid").innerHTML = wzdWlanPara[14];
+			document.getElementById("remoteBssid").innerHTML = escapeHtml(wzdWlanPara[15]);
+		}
+		else if (wlanMode == 4) //WISP
+		{
+			document.getElementById("remoteBssid").innerHTML = escapeHtml(wzdWlanPara[17]);
+		}
+		else	//urpt
+		{
+			//document.getElementById("rootSsid").innerHTML = wzdWlanPara[16];
+			document.getElementById("remoteBssid").innerHTML = escapeHtml(wzdWlanPara[17]);
+		}
+		document.getElementById("t_root_ssid").style.display = "";
+		document.getElementById("t_remoteBssid").style.display = "";
+	}
+}
+
+function loadNetworkCfg()
+{
+	var sysMode = wzdFinishInf[8];
+	
+	document.getElementById("userName").innerHTML = escapeHtml(wzdAccoutPara[0]);
+	document.getElementById("userPassword").innerHTML = wzdAccoutPara[1];
+	document.getElementById("lanip").innerHTML = wzdNetWorkPara[1];
+	document.getElementById("defaultAccess").innerHTML = wzdNetWorkPara[3];
+	if (0 == wzdNetWorkPara[0])
+	{
+		document.getElementById("lantype").innerHTML = "Static IP";
+		document.getElementById("t_lanip").style.display = "";
+	}
+	else
+	{
+		document.getElementById("lantype").innerHTML = "Smart IP(DHCP)";
+	}
+	document.getElementById("t_userName").style.display = "";
+	document.getElementById("t_userPassword").style.display = "";
+	if (sysMode == 3 || sysMode == 6 || sysMode == 7) /*Client RE AP*/
+	{
+		document.getElementById("t_lantype").style.display = "";	
+	}
+	else	/*Router WISP*/
+	{
+		document.getElementById("t_lantype").style.display = "none";
+	}
+
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY onLoad="setTagStr(document,'wzd_end_ap');LoadHelp('WzdFinishHelpRpm.htm'); resize(this);" onResize="resize(this);">
+<CENTER>
+<FORM action="WzdEndRpm.htm" enctype="multipart/form-data" method="get">
+<TABLE id=autoWidth>
+	<TBODY>
+        <TR>
+          <TD class=h1 colspan=2 id="t_wzdEndT">Quick Setup - Review Setting</TD>
+        </TR>
+        <TR>
+          <TD class=blue colspan=2></TD>
+        </TR>
+        <TR>
+          <TD class=h2 id="t_wzdEndMsg">Congratulations! This device is now connecting you to the Internet. For detailed settings, please click other menus if necessary.</TD>
+        </TR>
+        <SCRIPT type="text/javascript">
+    if(wzdFinishInf[5] == 1)
+    {
+		document.write('<TR><TD style = "padding-left: 5%"><SPAN style="color:#C11C66" id="t_chg_warn">Changing working mode configuration will not take effect until this device is rebooted.</SPAN> </TD></TR>'); 
+	}
+</SCRIPT>
+		
+		<TR>
+          <TD class=blue colspan=2></TD>
+        </TR>
+		
+		<TR>
+			<TD>
+				<SPAN>&nbsp;&nbsp;&nbsp;&nbsp;Confirm the configuration you have set. If anything is wrong, please go Back to reset.</SPAN>
+			</TD>
+		</TR>
+		
+		<TR>
+			<TD>
+				<SPAN style="color:#C11C66">&nbsp;&nbsp;&nbsp;&nbsp;It's recommended to take a note of these settings that you'll need later for reference.</SPAN>
+			</TD>
+		</TR>
+		
+		<TR><TD>&nbsp;</TD></TR>
+		<TR><!--Wiress Setting-->
+			<TD class="h2">Wireless Settings</TD>
+		</TR>
+		<TR>
+			<TD>
+				<TABLE width="100%" align="center">
+					
+					<TR id="t_operMode">
+						<TD class="Item">Operation Mode:</TD>
+						<TD><DIV type="text" name="operMode" id="operMode"/></TD>
+					</TR>
+					
+					<SCRIPT type="text/javascript">
+					if(wzdWlanPara[1] == 6)//bridge(wds)
+					{
+						document.write('<TR><TD></TD></TR>');
+					}
+					</SCRIPT>
+					
+					<TR id="t_wds_ssid" style="display:none">
+						<TD class="Item">Root AP Wireless Network Name(SSID):</TD>
+						<TD><DIV type="text" name="wds_ssid" id="wds_ssid"/>
+						<script type="text/javascript">
+						if (wzdWlanPara[1] == 6)
+						{
+							document.write(escapeHtml(wzdWlanPara[22]));
+						}
+						</script>
+						</TD>
+					</TR>
+					
+					<TR id="t_wds_bssid" style="display:none">
+						<TD class="Item">Root AP MAC Address(BSSID):</TD>
+						<TD><DIV type="text" name="wds_bssid" id="wds_bssid"/></TD>
+					</TR>
+					
+					<SCRIPT type="text/javascript">
+					if(wzdWlanPara[1] == 6)//bridge(wds)
+					{
+						document.write('<TR><TD class="Item">Root AP Security Mode:</TD>');
+						document.write('<TD class><span>');
+						var keyType = wzdWlanPara[24] - 1;
+						if(keyType == 2)
+							keyType = 1;
+						document.write(strSecType[keyType]);//show none ,wep or wpa/wpa2
+						document.write('</span>&nbsp;&nbsp;');
+						document.write('</TD></TR>');
+						
+						if(wzdWlanPara[24] != 1)//security enable
+						{
+							if(wzdWlanPara[24] == 2 || wzdWlanPara[24] == 3)//wep
+							{
+								document.write('<TR><TD class="Item">Type:</TD>');
+								document.write('<TD class><span>');
+								var authType = wzdWlanPara[26] - 1;
+								document.write(wepType[authType]);//auto ,open or share
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+								document.write('<TR><TD class="Item">Key Index:</TD>');
+								document.write('<TD class><span>');
+								document.write(wzdWlanPara[25]);//key index
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+							}
+							document.write('<TR><TD class="Item">Wireless Password:</TD>');
+							document.write('<TD class><span>');
+							document.write(escapeHtml(wzdWlanPara[27]));
+							document.write('</span>&nbsp;&nbsp;');
+							document.write('</TD></TR>');
+						}		
+						document.write('<TR><TD></TD></TR>');
+					}
+					</SCRIPT>
+					
+					<TR id="t_ap_ssid" style="display:none">
+						<TD class="Item" id="apSsid" name = "apSsid">Wireless Network Name(SSID):</TD>
+						<TD><DIV type="text" name="localSsid" id="localSsid"/></TD>
+					</TR>
+					
+					<!--Bridge With Ap-->
+					<TR id="t_mptBssid1" style="display:none">
+						<TD class="Item">MAC of remote AP1:</TD>
+						<TD><DIV type="text" name="mptBssid1" id="mptBssid1"/></TD>
+					</TR>
+					<TR id="t_mptBssid2" style="display:none">
+						<TD class="Item">MAC of remote AP2:</TD>
+						<TD><DIV type="text" name="mptBssid2" id="mptBssid2"/></TD>
+					</TR>
+					<TR id="t_mptBssid3" style="display:none">
+						<TD class="Item">MAC of remote AP3:</TD>
+						<TD><DIV type="text" name="mptBssid3" id="mptBssid3"/></TD>
+					</TR>
+					<TR id="t_mptBssid4" style="display:none">
+						<TD class="Item">MAC of remote AP4:</TD>
+						<TD><DIV type="text" name="mptBssid4" id="mptBssid4"/></TD>
+					</TR>
+					
+					<!--end-->
+					<TR id="t_channel" style="display:none">
+						<TD class="Item">Wireless Channel:</TD>
+						<TD><DIV type="text" name="localChannel" id="localChannel"/></TD>
+					</TR>
+					
+					<TR id="t_root_ssid" style="display:none">
+						<TD class="Item">Wireless Name of Root AP(SSID):</TD>
+						<TD><DIV type="text" name="rootSsid" id="rootSsid"/>
+						<script type="text/javascript">
+						if ((wzdFinishInf[8] != 4) && (wzdWlanPara[1] == 3))
+						{
+							document.write(escapeHtml(wzdWlanPara[12]));
+						}
+						else if (wzdFinishInf[8] == 4 || wzdWlanPara[1] == 4)
+						{
+							document.write(escapeHtml(wzdWlanPara[16]));
+						}
+						else if (wzdWlanPara[1] == 5)
+						{
+							document.write(escapeHtml(wzdWlanPara[16]));
+						}
+						</script>
+						</TD>
+					</TR>
+					
+					<TR id="t_remoteBssid" style="display:none">
+						<TD class="Item">MAC Address of Root AP(BSSID):</TD>
+						<TD><DIV type="text" name="remoteBssid" id="remoteBssid"/></TD>
+					</TR>
+					
+					<!--Wireless Security Mode-->
+					<SCRIPT type="text/javascript">
+					if ((wzdFinishInf[8] != 4) && (wzdFinishInf[8] != 1) && ((wzdWlanPara[1] == 4) || (wzdWlanPara[1] == 5)))
+					{
+						document.write('<TR><TD class="Item">Wireless Name of Range Extender:</TD>');
+						document.write('<TD class><span>');
+						if (wzdWlanPara[1] == 5)
+						{
+							document.write(escapeHtml(wzdWlanPara[16]));
+						}
+						else
+						{
+							document.write(escapeHtml(wzdWlanPara[14]));
+						}
+						document.write('</span>&nbsp;&nbsp;');
+						document.write('</TD></TR>');
+					}
+					
+					var mssidNum = wzdWlanPara[0];
+					for(var i = 1; i <= mssidNum; i++)
+					{
+						if(wzdWlanPara[1] == 1)//mssid
+						{
+							document.write('<TR><TD></TD></TR>');
+							document.write('<TR><TD class="Item"><span>SSID</span> '+i+':&nbsp;</TD>');
+							document.write('<TD><span>');
+							document.write(escapeHtml(wzdWlanPara[2+i]));//ssid
+							document.write('</span>&nbsp;&nbsp;');
+							document.write('</TD></TR>');
+							if(wzdWlanPara[7] == 1)	//vlan enable
+							{
+								document.write('<TR><TD class="Item">VLAN ID:</TD>');
+								document.write('<TD><span>');
+								document.write(escapeHtml(wzdWlanPara[7+i]));//vlan id
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+							}
+						}
+						
+						document.write('<TR><TD class="Item">Wireless Security Mode:</TD>');
+						document.write('<TD class><span>');
+						var secType = wzdWlanSec[5*(i-1)+1];
+						if(0 == wzdWlanSec[5*(i-1)])
+						{
+							document.write(strSecType[0])
+						}
+						else
+						{
+							document.write(strSecType[secType]);//show none ,wep or wpa/wpa2
+						}
+						document.write('</span>&nbsp;&nbsp;');
+						document.write('</TD></TR>');
+						
+						if(wzdWlanSec[5*(i-1)])//security enable
+						{
+							if(secType == 1)//wep
+							{
+								document.write('<TR><TD class="Item">Type:</TD>');
+								document.write('<TD class><span>');
+								var type = wzdWlanSec[5*(i-1)+2] - 1;
+								document.write(wepType[type]);//auto ,open or share
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+								
+								document.write('<TR><TD class="Item">Key Index:</TD>');
+								document.write('<TD class><span>');
+								document.write(wzdWlanSec[5*(i-1)+3]);//key index
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+							}
+							/*
+							else if(secType == 3)//wpa/wpa2-psk
+							{
+								document.write('<TR><TD class="Item">Version:</TD>');
+								document.write('<TD class><span>');
+								var version = wzdWlanSec[5*(i-1)+2] - 1;
+								document.write(wpaVersion[version]);//show auto ,open or share
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+								
+								document.write('<TR><TD class="Item">Encryption:</TD>');
+								document.write('<TD class><span>');
+								var encrypt = wzdWlanSec[5*(i-1)+3] - 1;
+								document.write(wpaEncrypt[encrypt]);//show auto ,tkip or aes
+								document.write('</span>&nbsp;&nbsp;');
+								document.write('</TD></TR>');
+							}	
+							*/
+							if (3 == wzdFinishInf[8])  //client
+							{
+								document.write('<TR><TD class="Item">Root AP Wireless Password:</TD>');
+							}
+							else
+							{
+								document.write('<TR><TD class="Item">Local AP Wireless Password:</TD>');
+							}
+							document.write('<TD class><span>');
+							document.write(escapeHtml(wzdWlanSec[5*(i-1)+4]));//show auto ,open or share
+							document.write('</span>&nbsp;&nbsp;');
+							document.write('</TD></TR>');
+						}				
+					}	
+					</SCRIPT><!--end-->
+		
+					<!--Network Setting-->
+					<TR>
+					  <TD class=blue colspan=2></TD>
+					</TR>
+										
+					<TR>
+						<TD class="h2">Network Settings</TD>
+					</TR>
+					
+					<TR id="t_defaultAccess">
+						<TD class="Item">Default Access:</TD>
+						<TD><DIV type="text" name="defaultAccess" id="defaultAccess"/></TD>
+					</TR>
+					
+					<TR id="t_userName" style="display:none">
+						<TD class="Item">Login UserName:</TD>
+						<TD><DIV type="text" name="userName" id="userName"/></TD>
+					</TR>
+					
+					<TR id="t_userPassword" style="display:none">
+						<TD class="Item">Login Password:</TD>
+						<TD><DIV type="text" name="userPassword" id="userPassword"/></TD>
+					</TR>
+					
+					<TR id="t_lantype" style="display:none">
+						<TD class="Item">LAN Type:</TD>
+						<TD><DIV type="text" name="lantype" id="lantype"/></TD>
+					</TR>					
+					
+					<TR id="t_lanip" style="display:none">
+						<TD class="Item">LAN IP Address:</TD>
+						<TD><DIV type="text" name="lanip" id="lanip"/></TD>
+					</TR>
+				</TABLE>
+			</TD>
+		</TR>
+		
+		<!--Save Config-->
+		<TR>
+			<TD>
+				<TABLE>
+					<TR>
+					<TD class="Item">
+						<INPUT id="saveCfg" type="button" name="saveCfg" value="Save" onClick="saveConfig();">
+					</TD>
+					<TD>
+						<SPAN>Save these settings as a text file for future reference</SPAN>
+					</TD>
+					</TR>		
+				</TABLE>
+			</TD>
+		</TR>
+		
+		<TR>
+			<TD class=blue colspan=2></TD>
+        </TR>
+		
+		<TR>
+			<TD class=mbtn>
+				<INPUT class=buttonBig id=Return type=submit value="Back" name="Return">&nbsp;&nbsp;&nbsp;&nbsp;
+				<INPUT class="buttonBig" id="Submit" type="submit" value="Finish" name="Finish" onClick="return doFinish();">  
+				<INPUT type=hidden name=ClientId>
+			</TD>
+        </TR>
+		
+        <SCRIPT type="text/javascript">
+		<!--//
+			document.forms[0].ClientId.value = wzdFinishInf[1];
+		//-->
+		</SCRIPT>
+		
+	</TBODY>
+</TABLE>
+</FORM>
+</CENTER>
+</BODY>
+<HEAD>
+<META http-equiv="pragma" content="no-cache">
+</HEAD>
+</HTML>
+
+<SCRIPT>
+var cf = document.forms[0];
+initStats();
+initFinish();
+</SCRIPT>

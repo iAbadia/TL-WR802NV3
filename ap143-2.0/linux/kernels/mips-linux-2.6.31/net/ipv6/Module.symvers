@@ -1,0 +1,2 @@
+0x00000000	xfrm6_tunnel_register	net/ipv6/tunnel6	EXPORT_SYMBOL
+0x00000000	xfrm6_tunnel_deregister	net/ipv6/tunnel6	EXPORT_SYMBOL
